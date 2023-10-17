@@ -285,6 +285,8 @@ class AuditlogRule(models.Model):
         @api.model
         @api.returns('self', lambda value: value.id)
         def create_full(self, vals, **kwargs):
+            if self.env.context.get("auditlog_disabled"):
+                return create_full.origin(self, vals, **kwargs)
             self = self.with_context(auditlog_disabled=True)
             rule_model = self.env['auditlog.rule']
             new_record = create_full.origin(self, vals, **kwargs)
@@ -300,6 +302,8 @@ class AuditlogRule(models.Model):
         @api.model
         @api.returns('self', lambda value: value.id)
         def create_fast(self, vals, **kwargs):
+            if self.env.context.get("auditlog_disabled"):
+                return create_fast.origin(self, vals, **kwargs)
             self = self.with_context(auditlog_disabled=True)
             rule_model = self.env['auditlog.rule']
             vals2 = dict(vals)
@@ -366,6 +370,8 @@ class AuditlogRule(models.Model):
 
         @api.multi
         def write_full(self, vals, **kwargs):
+            if self.env.context.get("auditlog_disabled"):
+                return write_full.origin(self, vals, **kwargs)
             self = self.with_context(auditlog_disabled=True)
             rule_model = self.env['auditlog.rule']
             fields_list = rule_model.get_auditlog_fields(self)
@@ -383,6 +389,8 @@ class AuditlogRule(models.Model):
 
         @api.multi
         def write_fast(self, vals, **kwargs):
+            if self.env.context.get("auditlog_disabled"):
+                return write_fast.origin(self, vals, **kwargs)
             self = self.with_context(auditlog_disabled=True)
             rule_model = self.env['auditlog.rule']
             # Log the user input only, no matter if the `vals` is updated
@@ -408,6 +416,8 @@ class AuditlogRule(models.Model):
 
         @api.multi
         def unlink_full(self, **kwargs):
+            if self.env.context.get("auditlog_disabled"):
+                return unlink_full.origin(self, **kwargs)
             self = self.with_context(auditlog_disabled=True)
             rule_model = self.env['auditlog.rule']
             fields_list = rule_model.get_auditlog_fields(self)
@@ -421,6 +431,8 @@ class AuditlogRule(models.Model):
 
         @api.multi
         def unlink_fast(self, **kwargs):
+            if self.env.context.get("auditlog_disabled"):
+                return unlink_fast.origin(self, **kwargs)
             self = self.with_context(auditlog_disabled=True)
             rule_model = self.env['auditlog.rule']
             rule_model.sudo().create_logs(
